@@ -1,4 +1,5 @@
 'use strict';
+const fs = require('fs');
 const assert = require('assert');
 
 class Row {
@@ -7,11 +8,20 @@ class Row {
   }
 
   get() { return this._str; }
+}
 
-  toBuffer() { return Buffer.from(this.get() + '\n'); }
+class Rows {
+  constructor(lines) {
+    this._lines = lines.map(v => v.get()).join('\n');
+  }
+
+  toBuffer() {
+    return Buffer.from(this._lines);
+  }
 }
 assert.ok((new Row()) instanceof Row);
 let row1 = new Row('sample01, sample02, sample03');
 assert.equal(row1.get(), 'sample01, sample02, sample03');
 let row2 = new Row('sample04, sample05, sample06');
-assert.deepEqual(row2.toBuffer(), Buffer.from('sample04, sample05, sample06\n'));
+let rows = new Rows([row1, row2]);
+assert.deepEqual(rows.toBuffer(), Buffer.from('sample01, sample02, sample03\nsample04, sample05, sample06'));
